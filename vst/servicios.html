@@ -4,7 +4,7 @@
 	</h1>
 </div>
 
-<div class="wrapper-md" ng-controller="productosCtrl">
+<div class="wrapper-md" ng-controller="serviciosCtrl">
 
 	<div class="row" ng-show="nuevo">
 		<div class="col-md-10">
@@ -19,7 +19,7 @@
 							<div class="col-lg-6 col-md-6 col-sm-12">
 								<div class="form-group has-feedback" ng-class="{'has-success': myForm.name.$dirty && myForm.name.$valid, 'has-error': myForm.name.$dirty && myForm.name.$invalid}">
 									<label>Servicio</label>
-									<input type="text" class="form-control" name="name" ng-model="producto.SERVICIO" placeholder="Servicio" required />
+									<input type="text" class="form-control" name="name" ng-model="servicio.NOMBRE" placeholder="Servicio" required />
 
 									<span ng-show="myForm.name.$dirty && myForm.name.$valid" class="glyphicon glyphicon-ok form-control-feedback">
 									</span>
@@ -31,7 +31,7 @@
 							<div class="col-lg-6 col-md-6 col-sm-12">
 								<div class="form-group has-feedback" ng-class="{'has-success': myForm.duracion.$dirty && myForm.duracion.$valid, 'has-error': myForm.duracion.$dirty && myForm.duracion.$invalid}">
 									<label>Duracion</label>
-									<input type="number" step="15" min="60"class="form-control" name="duracion" ng-model="producto.DURACION" placeholder="Duracion" required />
+									<input type="number" step="15" min="60"class="form-control" name="duracion" ng-model="servicio.DURACION" placeholder="Duracion" required />
 
 									<span ng-show="myForm.duracion.$dirty && myForm.duracion.$valid" class="glyphicon glyphicon-ok form-control-feedback">
 									</span>
@@ -43,29 +43,24 @@
 						
 						<div class="row">
 							<div class="col-lg-6 col-md-6 col-sm-12">
-								<div class="form-group has-feedback" ng-class="{'has-success': myForm.ciudad.$dirty && myForm.ciudad.$valid, 'has-error': myForm.ciudad.$dirty && myForm.ciudad.$invalid}">
+								<div class="form-group has-feedback" ng-class="{'has-success': myForm.sucursal.$dirty && myForm.sucursal.$valid, 'has-error': myForm.sucursal.$dirty && myForm.sucursal.$invalid}">
 									<label>Sucursal</label>
-									<span ng-show="loadCiudades">
+									<span ng-show="loadSucursales">
 										<i class="fa fa-spinner fa-spin"></i>
 									</span>
 									<div>
-										
-										<select class="form-control" ng-model="empleado.SUCURSALES" ng-options="ciudade.NOMBRE for ciudade in ciudades" required > 
+										<select class="form-control" ng-model="servicio.SUCURSAL" ng-options="sucursal.NOMBRE for sucursal in sucursales" required > 
 											<option value="">-- Seleccione --</option>
 										</select>
 									</div>	
 									
 								</div>	
 							</div>
-
-							
-						</div>		
-
-						
+						</div>
 
 						<div class="row">
 							<div class="col-xs-4 pull-right">
-								<button type="submit" class="btn btn-success pull-right" ng-click="saveProducto();">
+								<button type="submit" class="btn btn-success pull-right" ng-click="saveServicio();">
 									{{botonText}}
 								</button>
 								
@@ -82,7 +77,7 @@
 
 	<div class="row">
 		<div class="col-md-12">
-			<button class="btn btn-default" ng-click="nuevoProducto();" ng-hide="nuevo" >
+			<button class="btn btn-default" ng-click="nuevoServicio();" ng-hide="nuevo" >
 				Nuevo
 			</button>
 		</div>
@@ -111,35 +106,35 @@
 								Eliminar/Editar
 							</th>
 						</tr>
-						<tr ng-show="productos.length==0">
+						<tr ng-show="servicios.length==0">
 							<td style="vertical-align:middle;" colspan="10">
 								<i class="fa fa-ban fa-3x"></i>
 								&nbsp;No data found
 							</td>
 						</tr>
-                		<tr ng-hide="productos.length>-1">
+                		<tr ng-hide="servicios.length>-1">
                 			<td style="vertical-align:middle;" colspan="10">
                 				<i class="fa fa-cog fa-3x fa-spin"></i>
                 				&nbsp;Loading
                 			</td>
                 		</tr>
-						<tr ng-repeat="producto in productos">
+						<tr ng-repeat="servicio in servicios">
 							<td>
-								{{producto.SERVICIO}}
+								{{servicio.NOMBRE}}
 							</td>
 							<td>
-								{{producto.DURACION}}
+								{{servicio.DURACION}}
 							</td>
 							<td>
-								{{producto.SUCURSAL}}
+								{{servicio.SUCURSAL.NOMBRE}}
 							</td>
 							<td style="width: 120px">
 	          					<div class="btn-group" style="float: right;">
-	            					<button type="button" class="btn btn-default fa fa-edit" ng-click="EditarProducto(producto);"></button>
+	            					<button type="button" class="btn btn-default fa fa-edit" ng-click="EditarServicio(servicio);"></button>
 	              				</div>
 	              					
 	              				<div class="btn-group" style="float: left;">
-	              					<button type="button" class="btn btn-danger fa fa-trash-o" ng-click="deleteProducto(producto);"></button>
+	              					<button type="button" class="btn btn-danger fa fa-trash-o" ng-click="deleteServicio(servicio);"></button>
 	            				</div>
 	        				</td>
 						</tr>

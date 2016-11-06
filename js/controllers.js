@@ -177,7 +177,7 @@ angular.module('app.controllers', ['pascalprecht.translate', 'ngCookies'])
 
 
 
-//**************************  SUCURSALES  ************************************
+//**************************  SUCURSALES ************************************
   .controller ('sucursalesCtrl', [
     '$scope',
     'DataSucursales', 
@@ -370,7 +370,7 @@ angular.module('app.controllers', ['pascalprecht.translate', 'ngCookies'])
   ])
 
  
-//+++++++++++++++++++++++++EMPLEADOS++++++++++++++++++++++++++++++++++++++++++++++
+//**************************  EMPLEADOS  ************************************
   .controller ('empleadosCtrl', [
     '$scope',
     'DataEmpleados',
@@ -467,8 +467,106 @@ angular.module('app.controllers', ['pascalprecht.translate', 'ngCookies'])
 
     }
   ])
- 
 
+
+//**************************  SERVICIOS  ************************************
+    .controller ('serviciosCtrl', [
+        '$scope',
+        'DataServicios',
+        'DataSucursales',
+        function ($scope, $data, $dataSucursales) {
+
+            $scope.nuevo = false;
+            $scope.servicio = {};
+            $scope.servicioUD = {};
+            $scope.TitleForm = "Registro";
+            $scope.botonText = "Guardar";
+            $scope.loadSucursales = true;
+
+            $data.get().then(function(data){
+                $scope.servicios = data.datos;
+                if(!$scope.servicios.length)
+                    $scope.servicios = [];
+
+                console.log($scope.servicios.length);
+            });
+
+            $dataSucursales.get().then(function(data){
+                $scope.sucursales = data.datos;
+                if(!$scope.sucursales.length)
+                    $scope.sucursales = [];
+
+
+                $scope.loadSucursales = false;
+            });
+
+            $scope.nuevoServicio = function(){
+                $scope.cancelar();
+                $scope.nuevo = !$scope.nuevo;
+                $scope.TitleForm = "Registro";
+                $scope.botonText = "Guardar";
+            };
+
+            $scope.cancelar = function(){
+                $scope.TitleForm = "Registro";
+                $scope.servicio = {};
+                $scope.myForm.$setPristine();
+                $scope.nuevo = false;
+            }; 
+
+            $scope.deleteServicio = function(pro){
+                if(confirm("Esta seguro de que desea eliminar el servicio: " + pro.NOMBRE)){
+                    $data.delete(pro.ID).then(function(result){
+                    if(result.status == 'success')
+                        $scope.servicios = _.without($scope.servicios, _.findWhere($scope.servicios, {ID:pro.ID}));
+                    else
+                        alert('Error al intentar eliminar servicio');
+                    });
+                }
+            }
+
+            $scope.saveServicio = function(){
+
+                if($scope.servicio.ID > 0){
+                    var status = 0;
+
+                    $data.put($scope.servicio.ID, $scope.servicio).then(function (result) {
+                        if(result.status != 'error'){
+                            $scope.servicioUD = angular.copy($scope.servicio);
+                            $scope.cancelar();
+                        }else{
+                            alert('Error al actualizar Regitro');
+                        }
+                    });
+
+                }
+                else{
+                    $data.post($scope.servicio).then(function(data){
+                        if(data.status == 'success'){
+                            var servicio = angular.copy($scope.servicio);
+                            servicio.ID = data.data;
+                            $scope.servicios.push(servicio);
+                            $scope.servicio = {}; 
+                            $scope.cancelar();
+                        }
+                        else
+                            alert(data.message);
+                    });
+                }
+            };
+
+            $scope.EditarServicio = function(pro){
+                var newServicio = angular.copy(pro);
+                $scope.servicioUD = pro;
+                $scope.cancelar();
+                $scope.nuevo = true;
+                $scope.TitleForm = "Editar Servicio: " + newServicio.NOMBRE;
+                $scope.servicio = newServicio;
+                $scope.botonText = "Actualizar";
+            }
+
+        }
+    ])
 
 //++++++++++++++++++++++++++++   LOGIN    ++++++++++++++++++++++++++++++++++++++++
  .controller('authCtrl', function ($scope, $rootScope, $routeParams, $location, $http, Data) {

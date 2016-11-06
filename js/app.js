@@ -39,7 +39,7 @@ var app = angular.module('app', [
         app.value      = $provide.value;
 
         $urlRouterProvider
-            .otherwise('/app/cbascula/listado');
+            .otherwise('/app/mantenimiento/sucursales');
         $stateProvider
 
 //************************************BASCULA*********************************

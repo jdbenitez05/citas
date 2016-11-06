@@ -6,7 +6,7 @@
     $app = \Slim\Slim::getInstance();
     
     define('ESPECIALCONSTANT', true);
-    require('../func/api_productos.php');
+    require('../func/api_servicios.php');
     
 
 ?>

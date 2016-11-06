@@ -165,10 +165,10 @@
 			while($row = mysqli_fetch_array($sucursales)) {
 				
 				$res = array(
-					'ID' => $row['SUCURSALID'],
-					'NOMBRE' => $row['SUCURSALNOMBRE'],
-					'DIRECCION' => $row['SUCURSALDIRECCION'],
-					'DISPONIBILIDAD' => $row['SUCURSALDISPONIBILIDAD']
+					'ID' => $row['sucursalid'],
+					'NOMBRE' => $row['sucursalnombre'],
+					'DIRECCION' => $row['sucursaldireccion'],
+					'DISPONIBILIDAD' => $row['sucursaldisponibilidad']
 				);
 			}
 		}
@@ -263,61 +263,65 @@
 
 
 #--------------------------- SERVICIOS ----------------------------------------------------
-	function getProductos($CODIGO){
+	function getServicios($CODIGO){
 		global $conexion;
 
 		$datos = '';
 		if($CODIGO != null){
-		$sql = "SELECT * FROM PRODUCTOS WHERE CODPRODUCTO=".$CODIGO;
-		$productos = $conexion -> Execute($sql);
+			$sql = "SELECT * FROM servicios WHERE servicioid = ".$CODIGO;
+			$servicios = mysqli_query($conexion, $sql);
 
-		
-		foreach ($productos as $row) {
-			$datos = array(
-				'ID' => $row['CODPRODUCTO'],
-				'NOMBRE' => $row['NOMBRE'],
-				'ABREVIACION' => $row['ABREVIACION'],
-				'DESCRIPCION' => $row['DESCRIPCION']
-			);
+			
+			while ($row = mysqli_fetch_array($servicios)) {
+				$sucursal = getSucursales($row['sucursalid']);
+				$datos = array(
+					'ID' => $row['servicioid'],
+					'NOMBRE' => $row['serviciodescripcion'],
+					'DURACION' => $row['serviciotiempo'],
+					'SUCURSAL' => $sucursal
+				);
+			}
 		}
-	}
-	else{
-			$sql = "SELECT * FROM PRODUCTOS";
-			$productos = $conexion -> Execute($sql);
+		else{
+			$sql = "SELECT * FROM servicios";
+			$servicios = mysqli_query($conexion, $sql);
 
-			foreach ($productos as $row) {
+			while ($row = mysqli_fetch_array($servicios)) {
+				$sucursal = getSucursales($row['sucursalid']);
 				$datos[] = array(
-					'ID' => $row['CODPRODUCTO'],
-					'NOMBRE' => $row['NOMBRE'],
-					'ABREVIACION' => $row['ABREVIACION'],
-					'DESCRIPCION' => $row['DESCRIPCION']
+					'ID' => $row['servicioid'],
+					'NOMBRE' => $row['serviciodescripcion'],
+					'DURACION' => $row['serviciotiempo'],
+					'SUCURSAL' => $sucursal
 				);
 			}
 		}
 
 		return $datos;
 	}
-	function insertNewProducto($datos){
-		$PRODUCTOS = returnJsonDecode($datos);
+
+	function insertNewServicio($datos){
+		$SERVICIO = returnJsonDecode($datos);
+		$SUCURSAL = returnJsonDecode($SERVICIO['SUCURSAL']);
 		global $conexion;
 
 		//$conexion -> debug = true;
 
-		$sql = "INSERT INTO PRODUCTOS(NOMBRE, ABREVIACION, DESCRIPCION) VALUES(
-			'".$PRODUCTOS['NOMBRE']."',
-			'".$PRODUCTOS['ABREVIACION']."',
-			'".$PRODUCTOS['DESCRIPCION']."'
+		$sql = "CALL insert_servicios(
+			'".$SERVICIO['NOMBRE']."',
+			'".$SERVICIO['DURACION']."',
+			'".$SUCURSAL['ID']."'
 		)";
 
-		if($conexion -> Execute($sql)){
-			$id = $conexion -> Insert_ID($conexion);
+		if(mysqli_query($conexion, $sql)){
+			$id = mysqli_insert_id($conexion);
 			$resp['status'] = 'success';
 			$resp['data'] = $id;
 			$resp['message'] = 'Registro creado con Exito';			
 		}else{
 			$resp['status'] = 'error';
 			$resp['data'] = 0;
-			$resp['message'] = 'Error al crear registro';
+			$resp['message'] = 'Error al crear registro. Error: ' . mysqli_error($conexion);
 		}
 		return json_encode($resp);
 	}

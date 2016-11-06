@@ -1,0 +1,29 @@
+
+<!-- Menú inter -->
+
+<ul class="nav" ng-controller="navController as navigation">
+  
+  <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+    <span translate="aside.nav.HEADER">Navigation</span>
+  </li>
+  
+  <li ng-repeat="option in opciones" ng-class="{active:$state.includes('app.{{option.id}}')}">
+    <a href class="auto">
+      <span class="pull-right text-muted" ng-show="option.subItems.length">
+        <i class="fa fa-fw fa-angle-right text"></i>
+        <i class="fa fa-fw fa-angle-down text-active"></i>
+      </span>
+      <i class="{{option.imgClass}}"></i>
+      <span class="font-bold">{{option.name}}</span>
+    </a>
+    <ul class="nav nav-sub dk" ng-show="option.subItems.length">
+      <li ui-sref-active="active" ng-repeat="subitem in option.subItems">
+        <a ui-sref="app.{{option.id + '.' + subitem.id}}">
+          <span>{{subitem.name}}</span>
+        </a>
+      </li>  
+    </ul>
+  </li>
+
+</ul>
+

@@ -1,0 +1,1085 @@
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 14-12-2014 a las 19:10:46
+-- Versión del servidor: 5.5.36
+-- Versión de PHP: 5.4.27
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Base de datos: `mydb`
+--
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCamiones`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM CAMIONES WHERE CODCAMION4=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteClientes`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM CLIENTES WHERE CODCLIENTE=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteLugares`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM LUGARES WHERE CODLUGAR=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deletePlantas`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM PLANTAS WHERE IDLUGAR=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deletePozos`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM POZOS WHERE IDLUGAR=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteProductos`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM PRODUCTOS WHERE CODPRODUCTO=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteProveedores`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM PROVEEDORES WHERE CODPROVEDOR=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deletePuertos`(IN DEL INT)
+    READS SQL DATA
+BEGIN  
+    DECLARE error INT;
+START TRANSACTION;
+DELETE FROM PUERTOS WHERE IDLUGAR=DEL;
+SET error=(SELECT @error);
+IF(error=0) THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;    
+    
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_plantas`(
+		v_nombre VARCHAR(150),
+	    v_abre VARCHAR(45),
+	    v_ubicacion VARCHAR(45),
+	    v_idcliente int
+	)
+    READS SQL DATA
+BEGIN
+	DECLARE error INT;
+	DECLARE LASTID INT;
+	START TRANSACTION;
+	INSERT INTO LUGARES (LUGARNOMBRE, TIPOLUGAR)
+	VALUES (v_nombre, 1);
+	
+	SELECT DISTINCT LAST_INSERT_ID() INTO LASTID FROM LUGARES;
+	INSERT INTO PLANTAS VALUES(LASTID, v_nombre, v_abre, v_ubicacion, v_idcliente);
+
+	IF(error=0)THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_pozos`(
+		v_nombre VARCHAR(150),
+	    v_abre VARCHAR(45),
+	    v_descripcion LONGTEXT
+	)
+    READS SQL DATA
+BEGIN
+	DECLARE error INT;
+	DECLARE LASTID INT;
+	START TRANSACTION;
+	INSERT INTO LUGARES (LUGARNOMBRE, TIPOLUGAR)
+	VALUES (v_nombre, 2);
+	
+	SELECT DISTINCT LAST_INSERT_ID() INTO LASTID FROM LUGARES;
+	INSERT INTO POZOS VALUES(LASTID, v_nombre, v_abre, v_descripcion);
+
+	IF(error=0)THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_puertos`(
+		v_nombre VARCHAR(45),
+	    v_abre VARCHAR(45)
+	)
+    READS SQL DATA
+BEGIN
+	DECLARE error INT;
+	DECLARE LASTID INT;
+	START TRANSACTION;
+	INSERT INTO LUGARES (LUGARNOMBRE, TIPOLUGAR)
+	VALUES (v_nombre, 3);
+	
+	SELECT DISTINCT LAST_INSERT_ID() INTO LASTID FROM LUGARES;
+	INSERT INTO PUERTOS VALUES(LASTID, v_nombre, v_abre);
+
+	IF(error=0)THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCamiones`(IN `CODCAMION4` INT, 
+														   IN `PROVEEDORID` INT,
+														   IN `PLACA` VARCHAR(20),
+														   IN `COLOR` VARCHAR(100), 
+														   IN `CAPACIDAD` VARCHAR(45),
+														   IN `DESCRIPCION` VARCHAR(500))
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+INSERT INTO CAMIONES
+ VALUES (CODCAMION4, PROVEEDORID,   PLACA,   COLOR, CAPACIDAD, DESCRIPCION);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveClientes`(`CODCLIENTE` INT, 
+							   IN `NIT` VARCHAR(45), 
+						       IN `NIOMBRE` VARCHAR(45), 
+							   IN `DIRECCION` VARCHAR(45),
+							   IN `TELEFONO` VARCHAR(45), 
+							   IN `CIUDAD` VARCHAR(45), 
+							   IN `EMAIL` VARCHAR(45),
+							   IN `SITIOWEB` VARCHAR(45))
+    READS SQL DATA
+BEGIN
+    DECLARE error INT;
+START TRANSACTION;
+INSERT INTO CLIENTES
+ VALUES (CODCLIENTE, NIT,   NIOMBRE,   DIRECCION, TELEFONO, CIUDAD,   EMAIL,   SITIOWEB);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveProductos`(IN `CODPRODUCTO` INT,
+															  IN `NOMBRE` VARCHAR(150),
+															  IN `ABREVIACION` VARCHAR(45),
+															  IN `DESCRIPCION` VARCHAR(500))
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+INSERT INTO PRODUCTOS
+  VALUES(CODPRODUCTO, NOMBRE,   ABREVIACION,   DESCRIPCION);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveProveedores`(IN `CODPROVEDOR` INT,
+															  IN `NOMBRE` VARCHAR(150),
+															  IN `ABREVIACION` VARCHAR(45),
+															  IN `DESCRIPCION` VARCHAR(500),
+															  IN `TIPOPROVEEDOR` INT)
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+INSERT INTO PROVEEDORES
+  VALUES(CODPROVEDOR, NOMBRE,   ABREVIACION,   DESCRIPCION, TIPOPROVEEDOR);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectCamiones`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM CAMIONES;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectClientes`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM CLIENTES;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectConductores`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM CONDUCTORES;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectLugares`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM LUGARES;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectPlantas`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM PLANTAS;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectPozos`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM POZOS;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectProductos`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM PRODUCTOS;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectProveedores`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM PROVEEDORES;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectPuertos`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM PUERTOS;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectRutas`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM RUTAS;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selectVehiculos`()
+    READS SQL DATA
+BEGIN 
+	DECLARE error INT;
+START TRANSACTION;
+SELECT * FROM CAMIONES;
+IF(error=0)THEN
+ROLLBACK;
+
+END IF;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateClientes`(IN `v_CODCLIENTE` INT, IN `v_NIT` VARCHAR(45), IN `v_NOMBRE` VARCHAR(45), IN `v_DIRECCION` VARCHAR(45), IN `v_TELEFONO` VARCHAR(45), IN `v_CIUDAD` VARCHAR(45), IN `v_EMAIL` VARCHAR(45), IN `v_SITIOWEB` VARCHAR(45))
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE CLIENTES SET NIT=v_NIT, NIOMBRE=v_NOMBRE, DIRECCION=v_DIRECCION, TELEFONO=v_TELEFONO, CIUDAD=v_CIUDAD, EMAIL=v_EMAIL, SITIOWEB=v_SITIOWEB WHERE CODCLIENTE=v_CODCLIENTE;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateLugares`(IN `v_CODLUGAR` INT, IN `v_LUGARNOMBRE` VARCHAR(45), IN `v_TIPOLUGAR` INT)
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE LUGARES SET LUGARNOMBRE=v_LUGARNOMBRE, TIPOLUGAR=v_TIPOLUGAR WHERE CODLUGAR=v_CODLUGAR;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updatePlanta`(v_IDLUGAR INT, 
+												    v_NOMBRE VARCHAR(45), 
+												    v_ABREVIADO VARCHAR(45),
+												    v_UBICACION VARCHAR(45), 
+													v_IDCLIENTE INT)
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE PLANTAS SET NOMBRE=v_NOMBRE, ABREVIADO=v_ABREVIADO, UBICACION=v_UBICACION, IDCLIENTE=v_IDCLIENTE WHERE IDLUGAR=v_IDLUGAR;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updatePlantas`(v_IDLUGAR INT, 
+												    v_NOMBRE VARCHAR(45), 
+												    v_ABREVIADO VARCHAR(45),
+												    v_UBICACION VARCHAR(45), 
+													v_IDCLIENTE INT)
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE PLANTAS SET NOMBRE=v_NOMBRE, ABREVIADO=v_ABREVIADO, UBICACION=v_UBICACION, IDCLIENTE=v_IDCLIENTE WHERE IDLUGAR=v_IDLUGAR;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updatePozos`(IN v_IDLUGAR INT, 
+												    v_NOMBRE VARCHAR(45), 
+												    v_ABREVIADO VARCHAR(45), 
+												    v_DESCRIPCION VARCHAR(45))
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE POZOS SET NOMBRE=v_NOMBRE, ABREVIADO=v_ABREVIADO, DESCRIPCION=v_DESCRIPCION WHERE IDLUGAR=v_IDLUGAR;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateProductos`( v_CODPRODUCTO INT, 
+												    v_NOMBRE VARCHAR(45), 
+												    v_ABREVIACION VARCHAR(45), 
+												    v_DESCRIPCION VARCHAR(45))
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE PRODUCTOS SET CODPRODUCTO=v_CODPRODUCTO, NOMBRE=v_NOMBRE, ABREVIACION=v_ABREVIACION, DESCRIPCION=v_DESCRIPCION WHERE CODPRODUCTO=v_CODPRODUCTO;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateProveedores`(IN `v_CODPROVEDOR` INT, IN `v_NOMBRE` VARCHAR(45), IN `v_ABREVIACION` VARCHAR(45), IN `v_DESCRIPCION` VARCHAR(45), IN `v_TIPOPROVEEDOR` INT(11))
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE PROVEEDORES SET CODPROVEDOR=v_CODPROVEDOR, NOMBRE=v_NOMBRE, ABREVIACION=v_ABREVIACION, DESCRIPCION=v_DESCRIPCION, TIPOPROVEEDOR=v_TIPOPROVEEDOR WHERE CODPROVEDOR=V_CODPROVEDOR;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updatePuertos`(IN v_IDLUGAR INT, 
+												    v_NOMBRE VARCHAR(45), 
+												    v_ABREVIADO VARCHAR(45))
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE PUERTOS SET NOMBRE=v_NOMBRE, ABREVIADO=v_ABREVIADO WHERE IDLUGAR=V_IDLUGAR;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateVehiculos`(IN `v_CODCAMION4` INT, IN `v_PROVEEDORID` INT, IN `v_PLACA` VARCHAR(45), IN `v_COLOR` VARCHAR(45), IN `v_CAPACIDAD` VARCHAR(45), IN `v_DESCRIPCION` VARCHAR(500))
+BEGIN
+    DECLARE error INT;
+    START TRANSACTION;
+UPDATE CAMIONES SET PROVEEDORID=v_PROVEEDORID, PLACA=v_PLACA, COLOR=v_COLOR, CAPACIDAD=v_CAPACIDAD, DESCRIPCION=v_DESCRIPCION WHERE CODCAMION4=v_CODCAMION4;
+SET error=(SELECT @error);
+IF(error=0)THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+    
+END$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bonificaciones`
+--
+
+CREATE TABLE IF NOT EXISTS `bonificaciones` (
+  `BONIFICACIONID` int(11) NOT NULL AUTO_INCREMENT,
+  `VALOR` double NOT NULL,
+  `DESCRIPCION` longtext NOT NULL,
+  `CUMPLIDOS_CODCUMPLIDO` int(11) NOT NULL,
+  PRIMARY KEY (`BONIFICACIONID`),
+  KEY `fk_BONIFICACIONES_CUMPLIDOS1_idx` (`CUMPLIDOS_CODCUMPLIDO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `camiones`
+--
+
+CREATE TABLE IF NOT EXISTS `camiones` (
+  `CODCAMION4` int(11) NOT NULL AUTO_INCREMENT,
+  `PROVEEDORID` int(11) NOT NULL,
+  `PLACA` varchar(20) NOT NULL,
+  `COLOR` varchar(100) DEFAULT NULL,
+  `CAPACIDAD` varchar(45) DEFAULT NULL,
+  `DESCRIPCION` longtext,
+  PRIMARY KEY (`CODCAMION4`),
+  UNIQUE KEY `PLACA_UNIQUE` (`PLACA`),
+  KEY `fk_CAMIONES_PROVEEDORES1_idx` (`PROVEEDORID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `camiones`
+--
+
+INSERT INTO `camiones` (`CODCAMION4`, `PROVEEDORID`, `PLACA`, `COLOR`, `CAPACIDAD`, `DESCRIPCION`) VALUES
+(1, 1, 'FLJ24C', 'ROJO', '1', 'VVVV');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clientes`
+--
+
+CREATE TABLE IF NOT EXISTS `clientes` (
+  `CODCLIENTE` int(11) NOT NULL AUTO_INCREMENT,
+  `NIT` varchar(45) DEFAULT NULL,
+  `NIOMBRE` varchar(45) DEFAULT NULL,
+  `DIRECCION` varchar(45) DEFAULT NULL,
+  `TELEFONO` varchar(45) DEFAULT NULL,
+  `CIUDAD` varchar(45) DEFAULT NULL,
+  `EMAIL` varchar(45) DEFAULT NULL,
+  `SITIOWEB` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`CODCLIENTE`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`CODCLIENTE`, `NIT`, `NIOMBRE`, `DIRECCION`, `TELEFONO`, `CIUDAD`, `EMAIL`, `SITIOWEB`) VALUES
+(1, '123456789', 'ELVER GOMEZ TORBA', 'ALL', '123456789', 'QUILLA', 'asdf@gmail.com', 'SDFSDF');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `conductores`
+--
+
+CREATE TABLE IF NOT EXISTS `conductores` (
+  `CODCONDUCTOR` int(11) NOT NULL AUTO_INCREMENT,
+  `CEDULA` varchar(45) DEFAULT NULL,
+  `NOMBRES` varchar(200) NOT NULL,
+  `IDPROVEEDOR` int(11) NOT NULL,
+  PRIMARY KEY (`CODCONDUCTOR`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Volcado de datos para la tabla `conductores`
+--
+
+INSERT INTO `conductores` (`CODCONDUCTOR`, `CEDULA`, `NOMBRES`, `IDPROVEEDOR`) VALUES
+(1, 'CONDUCTOR1', 'ROBER GALARGA', 1),
+(2, 'CONDUCTOR1', 'ROBER GALARGA', 1),
+(3, 'CONDUCTOR3', 'ELVER GALARGA', 1),
+(4, 'CONDUCTOR4', 'NORI NAVAS', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cumplidos`
+--
+
+CREATE TABLE IF NOT EXISTS `cumplidos` (
+  `CODCUMPLIDO` int(11) NOT NULL,
+  `IDPROVEEDOR` int(11) NOT NULL,
+  `IDPRODUCTO` int(11) NOT NULL,
+  `NGUIA` int(11) NOT NULL,
+  `IDCAMION` int(11) NOT NULL,
+  `IDRUTA` int(11) NOT NULL,
+  `IDLUGAR_PLANTA` int(11) NOT NULL,
+  `FECHA_ENTRADA` int(8) DEFAULT NULL,
+  `HORA_ENTRADA` int(4) DEFAULT NULL,
+  `FECHA_SALIDA` int(8) DEFAULT NULL,
+  `HORA_SALIDA` int(4) DEFAULT NULL,
+  `HORAS_TOTAL` int(11) DEFAULT NULL,
+  `PESOBASCULA` double DEFAULT NULL,
+  `VOLUMEN_CARGADO` double DEFAULT NULL,
+  `VOLUMEN_DESCARGADO` double DEFAULT NULL,
+  `VOLUMEN_DIFERENCIA` double DEFAULT NULL,
+  `TIPO_CUMPLIDO` int(11) DEFAULT NULL,
+  PRIMARY KEY (`CODCUMPLIDO`),
+  UNIQUE KEY `FECHA_ENTRADA_UNIQUE` (`FECHA_ENTRADA`),
+  KEY `fk_CONTROLBASCULA_PROVEEDORES1_idx` (`IDPROVEEDOR`),
+  KEY `fk_CUMPLIDOS_PRODUCTOS1_idx` (`IDPRODUCTO`),
+  KEY `fk_CUMPLIDOS_CAMIONES1_idx` (`IDCAMION`),
+  KEY `fk_CUMPLIDOS_RUTAS1_idx` (`IDRUTA`),
+  KEY `fk_CUMPLIDOS_PLANTAS1_idx` (`IDLUGAR_PLANTA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `lugares`
+--
+
+CREATE TABLE IF NOT EXISTS `lugares` (
+  `CODLUGAR` int(11) NOT NULL AUTO_INCREMENT,
+  `LUGARNOMBRE` varchar(45) DEFAULT NULL,
+  `TIPOLUGAR` int(11) DEFAULT NULL,
+  PRIMARY KEY (`CODLUGAR`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `lugares`
+--
+
+INSERT INTO `lugares` (`CODLUGAR`, `LUGARNOMBRE`, `TIPOLUGAR`) VALUES
+(1, 'PLANTA1', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `opciones`
+--
+
+CREATE TABLE IF NOT EXISTS `opciones` (
+  `CODOPCION` int(11) NOT NULL AUTO_INCREMENT,
+  `REFER` varchar(45) NOT NULL,
+  `NOMBRE` varchar(45) NOT NULL,
+  `IMAGE` varchar(45) NOT NULL,
+  PRIMARY KEY (`CODOPCION`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Volcado de datos para la tabla `opciones`
+--
+
+INSERT INTO `opciones` (`CODOPCION`, `REFER`, `NOMBRE`, `IMAGE`) VALUES
+(1, 'cbasculas', 'Control bascula', 'fa fa-wrench fa-fw'),
+(2, 'facturacion', 'Facturacion', 'fa fa-edit fa-fw'),
+(3, 'gt', 'Gestion Rutas', 'fa fa-edit fa-fw'),
+(4, 'mantenimiento', 'Mantenimiento', 'fa fa-wrench fa-fw'),
+(5, 'administracion', 'Administración', 'fa fa-sitemap fa-fw');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `opcionesrol`
+--
+
+CREATE TABLE IF NOT EXISTS `opcionesrol` (
+  `CODOPCIONROL` int(11) NOT NULL AUTO_INCREMENT,
+  `IDROL` int(11) NOT NULL,
+  `IDSUBOPCION` int(11) NOT NULL,
+  PRIMARY KEY (`CODOPCIONROL`),
+  KEY `fk_OPCIONESROL_ROLES1_idx` (`IDROL`),
+  KEY `fk_OPCIONESROL_SUBOPCIONES1_idx` (`IDSUBOPCION`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `plantas`
+--
+
+CREATE TABLE IF NOT EXISTS `plantas` (
+  `IDLUGAR` int(11) NOT NULL,
+  `NOMBRE` varchar(150) NOT NULL,
+  `ABREVIADO` varchar(45) NOT NULL,
+  `UBICACION` varchar(45) NOT NULL,
+  `IDCLIENTE` int(11) NOT NULL,
+  PRIMARY KEY (`IDLUGAR`),
+  KEY `fk_PLANTAS_CLIENTES1_idx` (`IDCLIENTE`),
+  KEY `fk_PLANTAS_LUGARES1_idx` (`IDLUGAR`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `plantas`
+--
+
+INSERT INTO `plantas` (`IDLUGAR`, `NOMBRE`, `ABREVIADO`, `UBICACION`, `IDCLIENTE`) VALUES
+(1, 'PLANTA1', 'PLA1', 'LAS MORAS', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `plantasusuario`
+--
+
+CREATE TABLE IF NOT EXISTS `plantasusuario` (
+  `CODPLANTAUSUARIO` int(11) NOT NULL AUTO_INCREMENT,
+  `ESTADO` int(11) NOT NULL,
+  `IDUSUARIO` int(11) NOT NULL,
+  `IDLUGAR_PLANTA` int(11) NOT NULL COMMENT 'Esta tabla es para los usuarios con  rol de operador donde se almacenara el historial de las plantas que ha tenido a cargo cada operador.',
+  PRIMARY KEY (`CODPLANTAUSUARIO`),
+  KEY `fk_PLANTASUSUARIO_USUARIOS1_idx` (`IDUSUARIO`),
+  KEY `fk_PLANTASUSUARIO_PLANTAS1_idx` (`IDLUGAR_PLANTA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pozos`
+--
+
+CREATE TABLE IF NOT EXISTS `pozos` (
+  `IDLUGAR` int(11) NOT NULL,
+  `NOMBRE` varchar(150) NOT NULL,
+  `ABREVIADO` varchar(45) NOT NULL,
+  `DESCRIPCION` longtext,
+  PRIMARY KEY (`IDLUGAR`),
+  KEY `fk_POZOS_LUGARES1_idx` (`IDLUGAR`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos`
+--
+
+CREATE TABLE IF NOT EXISTS `productos` (
+  `CODPRODUCTO` int(11) NOT NULL AUTO_INCREMENT,
+  `NOMBRE` varchar(150) NOT NULL,
+  `ABREVIACION` varchar(45) NOT NULL,
+  `DESCRIPCION` longtext,
+  PRIMARY KEY (`CODPRODUCTO`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`CODPRODUCTO`, `NOMBRE`, `ABREVIACION`, `DESCRIPCION`) VALUES
+(1, 'PRODUCTO1', 'PRO1', 'SUAVE');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedores`
+--
+
+CREATE TABLE IF NOT EXISTS `proveedores` (
+  `CODPROVEDOR` int(11) NOT NULL AUTO_INCREMENT,
+  `NOMBRE` varchar(150) NOT NULL,
+  `ABREVIACION` varchar(45) DEFAULT NULL,
+  `DESCRIPCION` longtext,
+  `TIPOPROVEEDOR` int(11) DEFAULT NULL,
+  PRIMARY KEY (`CODPROVEDOR`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Volcado de datos para la tabla `proveedores`
+--
+
+INSERT INTO `proveedores` (`CODPROVEDOR`, `NOMBRE`, `ABREVIACION`, `DESCRIPCION`, `TIPOPROVEEDOR`) VALUES
+(1, 'PROVEEDOR1', 'PRO1', 'FF', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `puertos`
+--
+
+CREATE TABLE IF NOT EXISTS `puertos` (
+  `IDLUGAR` int(11) NOT NULL,
+  `NOMBRE` varchar(45) DEFAULT NULL,
+  `ABREVIADO` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`IDLUGAR`),
+  KEY `fk_PUERTOS_LUGARES1_idx` (`IDLUGAR`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `redireccionamientos`
+--
+
+CREATE TABLE IF NOT EXISTS `redireccionamientos` (
+  `CODREDIRECCIONAMIENTO` int(11) NOT NULL,
+  `IDCUMPLIDO` int(11) NOT NULL,
+  PRIMARY KEY (`CODREDIRECCIONAMIENTO`),
+  KEY `fk_REDIRECCIONAMIENTOS_CUMPLIDOS1_idx` (`IDCUMPLIDO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+CREATE TABLE IF NOT EXISTS `roles` (
+  `CODROL` int(11) NOT NULL AUTO_INCREMENT,
+  `NOMBRE` varchar(45) NOT NULL,
+  `DESCRIPCION` longtext,
+  PRIMARY KEY (`CODROL`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `rutas`
+--
+
+CREATE TABLE IF NOT EXISTS `rutas` (
+  `CODRUTA` int(11) NOT NULL AUTO_INCREMENT,
+  `LUGARES_CODLUGAR` int(11) NOT NULL,
+  `LUGARES_CODLUGAR1` int(11) NOT NULL,
+  `TIPO_RUTA` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`CODRUTA`),
+  KEY `fk_RUTAS_LUGARES1_idx` (`LUGARES_CODLUGAR`),
+  KEY `fk_RUTAS_LUGARES2_idx` (`LUGARES_CODLUGAR1`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `standby`
+--
+
+CREATE TABLE IF NOT EXISTS `standby` (
+  `STANDBYID` int(11) NOT NULL AUTO_INCREMENT,
+  `CANTIDAD` int(11) NOT NULL,
+  `VALORUNITARIO` double NOT NULL,
+  `TOTAL` double NOT NULL,
+  `DESCRIPCION` longtext,
+  `IDCUMPLIDO` int(11) NOT NULL,
+  PRIMARY KEY (`STANDBYID`),
+  KEY `fk_STANDBY_CUMPLIDOS1_idx` (`IDCUMPLIDO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `subopciones`
+--
+
+CREATE TABLE IF NOT EXISTS `subopciones` (
+  `CODSUBOPCION` int(11) NOT NULL AUTO_INCREMENT,
+  `REFER` varchar(45) NOT NULL,
+  `NOMBRE` varchar(45) DEFAULT NULL,
+  `IDOPCION` int(11) NOT NULL,
+  PRIMARY KEY (`CODSUBOPCION`),
+  KEY `fk_SUBOPCIONES_OPCIONES1_idx` (`IDOPCION`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+
+--
+-- Volcado de datos para la tabla `subopciones`
+--
+
+INSERT INTO `subopciones` (`CODSUBOPCION`, `REFER`, `NOMBRE`, `IDOPCION`) VALUES
+(1, 'listado', 'Cumplidos', 1),
+(2, 'entregas', 'Entregas', 1),
+(3, 'cumplidos', 'Cumplidos', 1),
+(4, 'bonificaciones', 'Bonificaciones', 1),
+(5, 'standby', 'Standby', 1),
+(6, 'rutas', 'Rutas', 3),
+(7, 'valores', 'Valores', 3),
+(8, 'conductores', 'Conductores', 4),
+(9, 'vehiculos', 'vehiculos', 4),
+(10, 'plantas', 'Plantas', 4),
+(11, 'proveedores', 'Proveedores', 4),
+(16, 'clientes', 'Clientes', 4),
+(17, 'productos', 'Productos', 4),
+(18, 'pozos', 'Pozos', 4),
+(19, 'puertos', 'Puertos', 4);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `CODUSUARIO` int(11) NOT NULL AUTO_INCREMENT,
+  `USUARIO` varchar(100) NOT NULL,
+  `PASSW` longtext NOT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `IDROL` int(11) NOT NULL,
+  PRIMARY KEY (`CODUSUARIO`),
+  UNIQUE KEY `USUARIO_UNIQUE` (`USUARIO`),
+  KEY `fk_USUARIOS_ROLES1_idx` (`IDROL`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `valores`
+--
+
+CREATE TABLE IF NOT EXISTS `valores` (
+  `CODVALOR` int(11) NOT NULL AUTO_INCREMENT,
+  `IDRUTA` int(11) NOT NULL,
+  `ESTADO` varchar(3) DEFAULT NULL,
+  `FECHA` int(8) DEFAULT NULL,
+  PRIMARY KEY (`CODVALOR`),
+  KEY `fk_VALORES_RUTAS1_idx` (`IDRUTA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `bonificaciones`
+--
+ALTER TABLE `bonificaciones`
+  ADD CONSTRAINT `fk_BONIFICACIONES_CUMPLIDOS1` FOREIGN KEY (`CUMPLIDOS_CODCUMPLIDO`) REFERENCES `cumplidos` (`CODCUMPLIDO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `camiones`
+--
+ALTER TABLE `camiones`
+  ADD CONSTRAINT `fk_CAMIONES_PROVEEDORES1` FOREIGN KEY (`PROVEEDORID`) REFERENCES `proveedores` (`CODPROVEDOR`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `cumplidos`
+--
+ALTER TABLE `cumplidos`
+  ADD CONSTRAINT `fk_CONTROLBASCULA_PROVEEDORES1` FOREIGN KEY (`IDPROVEEDOR`) REFERENCES `proveedores` (`CODPROVEDOR`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_CUMPLIDOS_CAMIONES1` FOREIGN KEY (`IDCAMION`) REFERENCES `camiones` (`CODCAMION4`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_CUMPLIDOS_PLANTAS1` FOREIGN KEY (`IDLUGAR_PLANTA`) REFERENCES `plantas` (`IDLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_CUMPLIDOS_PRODUCTOS1` FOREIGN KEY (`IDPRODUCTO`) REFERENCES `productos` (`CODPRODUCTO`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_CUMPLIDOS_RUTAS1` FOREIGN KEY (`IDRUTA`) REFERENCES `rutas` (`CODRUTA`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `opcionesrol`
+--
+ALTER TABLE `opcionesrol`
+  ADD CONSTRAINT `fk_OPCIONESROL_ROLES1` FOREIGN KEY (`IDROL`) REFERENCES `roles` (`CODROL`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_OPCIONESROL_SUBOPCIONES1` FOREIGN KEY (`IDSUBOPCION`) REFERENCES `subopciones` (`CODSUBOPCION`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `plantas`
+--
+ALTER TABLE `plantas`
+  ADD CONSTRAINT `fk_PLANTAS_CLIENTES1` FOREIGN KEY (`IDCLIENTE`) REFERENCES `clientes` (`CODCLIENTE`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_PLANTAS_LUGARES1` FOREIGN KEY (`IDLUGAR`) REFERENCES `lugares` (`CODLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `plantasusuario`
+--
+ALTER TABLE `plantasusuario`
+  ADD CONSTRAINT `fk_PLANTASUSUARIO_PLANTAS1` FOREIGN KEY (`IDLUGAR_PLANTA`) REFERENCES `plantas` (`IDLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_PLANTASUSUARIO_USUARIOS1` FOREIGN KEY (`IDUSUARIO`) REFERENCES `usuarios` (`CODUSUARIO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `pozos`
+--
+ALTER TABLE `pozos`
+  ADD CONSTRAINT `fk_POZOS_LUGARES1` FOREIGN KEY (`IDLUGAR`) REFERENCES `lugares` (`CODLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `puertos`
+--
+ALTER TABLE `puertos`
+  ADD CONSTRAINT `fk_PUERTOS_LUGARES1` FOREIGN KEY (`IDLUGAR`) REFERENCES `lugares` (`CODLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `redireccionamientos`
+--
+ALTER TABLE `redireccionamientos`
+  ADD CONSTRAINT `fk_REDIRECCIONAMIENTOS_CUMPLIDOS1` FOREIGN KEY (`IDCUMPLIDO`) REFERENCES `cumplidos` (`CODCUMPLIDO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `rutas`
+--
+ALTER TABLE `rutas`
+  ADD CONSTRAINT `fk_RUTAS_LUGARES1` FOREIGN KEY (`LUGARES_CODLUGAR`) REFERENCES `lugares` (`CODLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_RUTAS_LUGARES2` FOREIGN KEY (`LUGARES_CODLUGAR1`) REFERENCES `lugares` (`CODLUGAR`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `standby`
+--
+ALTER TABLE `standby`
+  ADD CONSTRAINT `fk_STANDBY_CUMPLIDOS1` FOREIGN KEY (`IDCUMPLIDO`) REFERENCES `cumplidos` (`CODCUMPLIDO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `subopciones`
+--
+ALTER TABLE `subopciones`
+  ADD CONSTRAINT `fk_SUBOPCIONES_OPCIONES1` FOREIGN KEY (`IDOPCION`) REFERENCES `opciones` (`CODOPCION`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_USUARIOS_ROLES1` FOREIGN KEY (`IDROL`) REFERENCES `roles` (`CODROL`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `valores`
+--
+ALTER TABLE `valores`
+  ADD CONSTRAINT `fk_VALORES_RUTAS1` FOREIGN KEY (`IDRUTA`) REFERENCES `rutas` (`CODRUTA`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

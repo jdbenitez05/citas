@@ -27,45 +27,39 @@
 
 
 
-# -------------------------- EMPLEADOS ----------------------------------------------------
+# -------------------------- EMPLEADOS  ---------------------------------------------------
 	
-	function getClientes($CODIGO){
+	function getEmpleados($CODIGO){
 		global $conexion;
 		
-			$res = '';
-			if($CODIGO != null){
-			$sql = "SELECT * FROM CLIENTES WHERE CODCLIENTE = ".$CODIGO;
-			$clientes = mysqli_query($conexion, $sql);
+		$res = '';
+		if($CODIGO != null){
+			$sql = "SELECT * FROM empleados WHERE empleadoid = ".$CODIGO;
+			$empleados = mysqli_query($conexion, $sql);
 
-			while($row = mysqli_fetch_array($clientes)){
-				$ciudad = getCiudades($row['CIUDAD']);
+			while($row = mysqli_fetch_array($empleados)){
+				$sucursal = getSucursales($row['sucursalid']);
 				$res = array(
-					'ID' => $row['CODCLIENTE'],
-					'NIT' => $row['NIT'],
-					'NOMBRE' => $row['NIOMBRE'],
-					'DIRECCION' => $row['DIRECCION'],
-					'TELEFONO' => $row['TELEFONO'],
-					'CIUDAD' => $ciudad,
-					'EMAIL' => $row['EMAIL'],
-					'SITIOWEB' => $row['SITIOWEB']
+					'ID' => $row['empleadoid'],
+					'DOCUMENTO' => $row['empleadonumerodocumento'],
+					'NOMBRES' => $row['empleadonombres'],
+					'APELLIDOS' => $row['empleadoapellidos'],
+					'SUCURSAL' => $sucursal
 				);
 			}
-	}
-	else{
-			$sql = "SELECT * FROM CLIENTES";
-			$clientes = mysqli_query($conexion, $sql);
+		}
+		else{
+			$sql = "SELECT * FROM empleados";
+			$empleados = mysqli_query($conexion, $sql);
 
-			while ($row = mysqli_fetch_array($clientes)) {
-				$ciudad = getCiudades($row['CIUDAD']);
+			while ($row = mysqli_fetch_array($empleados)) {
+				$sucursal = getSucursales($row['sucursalid']);
 				$res[] = array(
-					'ID' => $row['CODCLIENTE'],
-					'NIT' => $row['NIT'],
-					'NOMBRE' => $row['NIOMBRE'],
-					'DIRECCION' => $row['DIRECCION'],
-					'TELEFONO' => $row['TELEFONO'],
-					'CIUDAD' => $ciudad,
-					'EMAIL' => $row['EMAIL'],
-					'SITIOWEB' => $row['SITIOWEB']
+					'ID' => $row['empleadoid'],
+					'DOCUMENTO' => $row['empleadonumerodocumento'],
+					'NOMBRES' => $row['empleadonombres'],
+					'APELLIDOS' => $row['empleadoapellidos'],
+					'SUCURSAL' => $sucursal
 				);
 			}
 		}
@@ -73,79 +67,75 @@
 		return $res;
 	}
 
-	// Recibe los datos del cliente en el formato que los envia
-	function insertNewCliente($datos){
-		
+	// Recibe los datos del empleado en el formato que los envia
+	function insertNewEmpleado($datos){
 		global $conexion;
 
-		$CLIENTE = returnJsonDecode($datos);
-		$CIUDAD = returnJsonDecode($CLIENTE['CIUDAD']);
+		$EMPLEADO = returnJsonDecode($datos);
+		$SUCURSAL = returnJsonDecode($EMPLEADO['SUCURSAL']);
 		
-		$sql = "INSERT INTO CLIENTES(NIT, NIOMBRE, DIRECCION, TELEFONO, CIUDAD, EMAIL, SITIOWEB) VALUES(
-			'".$CLIENTE['NIT']."',
-			'".$CLIENTE['NOMBRE']."',
-			'".$CLIENTE['DIRECCION']."',
-			'".$CLIENTE['TELEFONO']."',
-			 ".$CIUDAD['ID'].",
-			'".$CLIENTE['EMAIL']."',
-			'".$CLIENTE['SITIOWEB']."'
+		$sql = "CALL insert_empleados(
+			'".$EMPLEADO['DOCUMENTO']."',
+			'".$EMPLEADO['NOMBRES']."',
+			'".$EMPLEADO['APELLIDOS']."',
+			 ".$SUCURSAL['ID']."
 		)";
 
-		if($conexion -> Execute($sql)){
-			$id = $conexion -> Insert_ID($conexion);
+		if(mysqli_query($conexion, $sql)){
+			$id = mysqli_insert_id($conexion);
 			$resp['status'] = 'success';
 			$resp['data'] = $id;
 			$resp['message'] = 'Registro creado con Exito';
 		}else{
 			$resp['status'] = 'error';
 			$resp['data'] = 0;
-			$resp['message'] = 'Error al crear registro';
+			$resp['message'] = 'Error al crear registro. Error: ' . mysqli_error($conexion);
 		}
 
 
 		return json_encode($resp);
 	}
 
-	function updateCliente($id, $datos){
+	function updateEmpleado($id, $datos){
 		global $conexion;
 
 		$data = returnJsonDecode($datos);
-		$CIUDAD = returnJsonDecode($data['CIUDAD']);
-		$sql = "call updateClientes(
-			  ".$id.",
-			 '".$data['NIT']."',
-			 '".$data['NOMBRE']."',
-			 '".$data['DIRECCION']."',
-			 '".$data['TELEFONO']."',
-			 '".$CIUDAD['ID']."',
-			 '".$data['EMAIL']."',
-			 '".$data['SITIOWEB']."'
-				)";
+		$SUCURSAL = returnJsonDecode($data['SUCURSAL']);
 
-		if ($conexion -> Execute($sql)) {
+
+		$sql = "UPDATE empleados set
+			empleadonumerodocumento = '".$data['DOCUMENTO']."',
+			empleadonombres = '".$data['NOMBRES']."',
+			empleadoapellidos = '".$data['APELLIDOS']."',
+			sucursalid = ".$SUCURSAL['ID']."
+			WHERE
+				empleadoid = ".$id."
+		";
+
+		if (mysqli_query($conexion, $sql)) {
 			$resp['status'] = 'success';
 			$resp['data'] = $id;
 			$resp['message'] = 'Registro actualizado con Exito';
 		}else{
 			$resp['status'] = 'error';
 			$resp['data'] = $id;
-			$resp['message'] = 'Error al intentar actualizar registro';
+			$resp['message'] = 'Error al intentar actualizar registro. Error: ' . mysqli_error($conexion);
 		}
 
 		return json_encode($resp);
 	}
 
-	function deleteCliente($id){
+	function deleteEmpleado($id){
 		global $conexion;
 
-		$sql= "call deleteClientes($id)";
+		$sql= "DELETE FROM empleados WHERE empleadoid = " . $id;
 
-		if($conexion -> Execute($sql)){
+		if(mysqli_query($conexion, $sql)){
 			$resp['status'] = 'success';
 			$resp['message'] = 'Registro eliminado con Exito';
 		}else{
 			$resp['status'] = 'error';
-			$resp['message'] = 'Error al eliminar registro';
+			$resp['message'] = 'Error al eliminar registro. Error: ' . mysqli_error($conexion);
 		}
 
 		return json_encode($resp);
@@ -262,7 +252,7 @@
 	}
 
 
-#--------------------------- SERVICIOS ----------------------------------------------------
+#--------------------------- SERVICIOS  ---------------------------------------------------
 	function getServicios($CODIGO){
 		global $conexion;
 
@@ -326,87 +316,174 @@
 		return json_encode($resp);
 	}
 
-	function updateProducto($id, $datos){
+	function updateServicio($id, $datos){
 		global $conexion;
 
 		$data = returnJsonDecode($datos);
+		$sucursal = returnJsonDecode($data['SUCURSAL']);
 
-		$sql = "call updateProductos(
-			".$id.",
-			'".$data['NOMBRE']."',
-			'".$data['ABREVIACION']."',
-			'".$data['DESCRIPCION']."')
+		$sql = "UPDATE servicios SET
+			serviciodescripcion = '".$data['NOMBRE']."',
+			serviciotiempo = '".$data['DURACION']."',
+			sucursalid = '".$sucursal['ID']."'
+			WHERE
+				servicioid = ".$id."
 		";
 		
-		if ($conexion -> Execute($sql)) {
+		if (mysqli_query($conexion, $sql)) {
 			$resp['status'] = 'success';
 			$resp['data'] = $id;
 			$resp['message'] = 'Registro actualizado con Exito';
 		}else{
 			$resp['status'] = 'error';
 			$resp['data'] = $id;
-			$resp['message'] = 'Error al intentar actualizar registro';
+			$resp['message'] = 'Error al intentar actualizar registro. Error: ' . mysqli_error($conexion);
 		}
 
 		return json_encode($resp);
 	}
 
-	function deleteProducto($id){
+	function deleteServicio($id){
 		global $conexion;
 
-		$sql= "call deleteProductos($id)";
+		$sql= "DELETE FROM servicios WHERE servicioid = ".$id;
 
-		if($conexion -> Execute($sql)){
+		if(mysqli_query($conexion, $sql)){
 			$resp['status'] = 'success';
 			$resp['message'] = 'Registro eliminado con Exito';
 		}else{
 			$resp['status'] = 'error';
-			$resp['message'] = 'Error al eliminar registro';
+			$resp['message'] = 'Error al eliminar registro. Error: ' . mysqli_error($conexion);
 		}
 
 		return json_encode($resp);
 	}
 
-	
-#--------------------------- OPCIONES -----------------------------------------------------
-	function getOpciones(){
+#--------------------------- CITAS      ---------------------------------------------------
+	function getCitas($CODIGO){
 		global $conexion;
 
-		$sql = "SELECT * FROM OPCIONES";
-		$opciones = $conexion -> Execute($sql);
+		$datos = '';
+		if($CODIGO != null){
+			$sql = "SELECT * FROM citas WHERE citaid = ".$CODIGO;
+			$citas = mysqli_query($conexion, $sql);
 
-		$res = '';
-		foreach ($opciones as $row) {
-			$res[] = array(
-				'ID' => $row['CODOPCION'],
-				'REFER' => $row['REFER'],
-				'NOMBRE' => $row['NOMBRE'],
-				'IMAGE' => $row['IMAGE']
-			);
+			
+			while ($row = mysqli_fetch_array($citas)) {
+				$sucursal = getSucursales($row['sucursalid']);
+				$empleado = getEmpleados($row['empleadoid']);
+				$servicio = getServicios($row['servicioid']);
+
+				$datos = array(
+					'ID' => $row['citaid'],
+					'FECHA' => $row['citafecha'],
+					'HORAINI' => $row['citahoraini'],
+					'HORAFIN' => $row['citahorafin'],
+					'PACIENTE' => $row['paciente'],
+					'SUCURSAL' => $sucursal,
+					'EMPLEADO' => $empleado,
+					'SERVICIO' => $servicio
+				);
+			}
+		}
+		else{
+			$sql = "SELECT * FROM citas";
+			$citas = mysqli_query($conexion, $sql);
+
+			while ($row = mysqli_fetch_array($citas)) {
+				$sucursal = getSucursales($row['sucursalid']);
+				$empleado = getEmpleados($row['empleadoid']);
+				$servicio = getServicios($row['servicioid']);
+
+				$datos[] = array(
+					'ID' => $row['citaid'],
+					'FECHA' => $row['citafecha'],
+					'HORAINICIO' => $row['citahoraini'],
+					'HORAFIN' => $row['citahorafin'],
+					'PACIENTE' => $row['paciente'],
+					'SUCURSAL' => $sucursal,
+					'EMPLEADO' => $empleado,
+					'SERVICIO' => $servicio
+				);
+			}
 		}
 
-		return json_encode($res);
+		return $datos;
 	}
 
-
-#--------------------------- SUBOPCIONES---------------------------------------------------
-	function getSubopciones(){
+	function insertNewCita($datos){
+		$CITA = returnJsonDecode($datos);
+		$SUCURSAL = returnJsonDecode($CITA['SUCURSAL']);
+		$EMPLEADO = returnJsonDecode($CITA['EMPLEADO']);
+		$SERVICIO = returnJsonDecode($CITA['SERVICIO']);
 		global $conexion;
 
-		$sql = "SELECT + FROM SUBOPCIONES";
-		$subopciones = $conexion -> Execute($sql);
+		//$conexion -> debug = true;
 
-		$res = '';
-		foreach ($subopciones as $row) {
-			$res[] = array(
-				'ID' => $row['CODSUBOPCION'],
-				'REFER' => $row['REFER'],
-				'NOMBRE' => $row['NOMBRE'],
-				'IDOPCION' => $row['IDOPCION']
-			);
+		$sql = "CALL insert_citas(
+			'".$CITA['FECHA']."',
+			'".$CITA['HORAINICIO']."',
+			'".$CITA['HORAFIN']."',
+			'".$CITA['PACIENTE']."',
+			'".$EMPLEADO['ID']."',
+			'".$SUCURSAL['ID']."',
+			'".$SERVICIO['ID']."'
+		)";
+
+		if(mysqli_query($conexion, $sql)){
+			$id = mysqli_insert_id($conexion);
+			$resp['status'] = 'success';
+			$resp['data'] = $id;
+			$resp['message'] = 'Registro creado con Exito';			
+		}else{
+			$resp['status'] = 'error';
+			$resp['data'] = 0;
+			$resp['message'] = 'Error al crear registro. Error: ' . mysqli_error($conexion);
+		}
+		return json_encode($resp);
+	}
+
+	function updateCita($id, $datos){
+		global $conexion;
+
+		$data = returnJsonDecode($datos);
+		$sucursal = returnJsonDecode($data['SUCURSAL']);
+
+		$sql = "UPDATE servicios SET
+			serviciodescripcion = '".$data['NOMBRE']."',
+			serviciotiempo = '".$data['DURACION']."',
+			sucursalid = '".$sucursal['ID']."'
+			WHERE
+				servicioid = ".$id."
+		";
+		
+		if (mysqli_query($conexion, $sql)) {
+			$resp['status'] = 'success';
+			$resp['data'] = $id;
+			$resp['message'] = 'Registro actualizado con Exito';
+		}else{
+			$resp['status'] = 'error';
+			$resp['data'] = $id;
+			$resp['message'] = 'Error al intentar actualizar registro. Error: ' . mysqli_error($conexion);
 		}
 
-		return json_encode($res);
+		return json_encode($resp);
+	}
+
+	function deleteCita($id){
+		global $conexion;
+
+		$sql= "DELETE FROM servicios WHERE servicioid = ".$id;
+
+		if(mysqli_query($conexion, $sql)){
+			$resp['status'] = 'success';
+			$resp['message'] = 'Registro eliminado con Exito';
+		}else{
+			$resp['status'] = 'error';
+			$resp['message'] = 'Error al eliminar registro. Error: ' . mysqli_error($conexion);
+		}
+
+		return json_encode($resp);
 	}
 
 ?>

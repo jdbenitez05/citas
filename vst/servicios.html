@@ -16,7 +16,7 @@
 	        	<div style="padding: 8px;">
 					<form name="myForm">
 						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-12">
+							<div class="col-sm-6">
 								<div class="form-group has-feedback" ng-class="{'has-success': myForm.name.$dirty && myForm.name.$valid, 'has-error': myForm.name.$dirty && myForm.name.$invalid}">
 									<label>Servicio</label>
 									<input type="text" class="form-control" name="name" ng-model="servicio.NOMBRE" placeholder="Servicio" required />
@@ -27,11 +27,13 @@
 									</span>
 								</div>
 							</div>
-
-							<div class="col-lg-6 col-md-6 col-sm-12">
+						</div>
+						
+						<div class="row">
+							<div class="col-sm-6">
 								<div class="form-group has-feedback" ng-class="{'has-success': myForm.duracion.$dirty && myForm.duracion.$valid, 'has-error': myForm.duracion.$dirty && myForm.duracion.$invalid}">
-									<label>Duracion</label>
-									<input type="number" step="15" min="60"class="form-control" name="duracion" ng-model="servicio.DURACION" placeholder="Duracion" required />
+									<label>Duracion en minutos</label>
+									<input type="number" step="15" min="60" class="form-control" name="duracion" ng-model="servicio.DURACION" placeholder="Duracion" required />
 
 									<span ng-show="myForm.duracion.$dirty && myForm.duracion.$valid" class="glyphicon glyphicon-ok form-control-feedback">
 									</span>
@@ -39,10 +41,8 @@
 									</span>
 								</div>
 							</div>
-						</div>
 						
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-12">
+							<div class="col-sm-6">
 								<div class="form-group has-feedback" ng-class="{'has-success': myForm.sucursal.$dirty && myForm.sucursal.$valid, 'has-error': myForm.sucursal.$dirty && myForm.sucursal.$invalid}">
 									<label>Sucursal</label>
 									<span ng-show="loadSucursales">
@@ -60,12 +60,11 @@
 
 						<div class="row">
 							<div class="col-xs-4 pull-right">
-								<button type="submit" class="btn btn-success pull-right" ng-click="saveServicio();">
-									{{botonText}}
-								</button>
-								
-								<button type="button" class="btn btn-default pull-right" style="margin-right: 5px;" ng-click="cancelar();">
+								<button type="button" class="btn btn-default pull-right" ng-click="cancelar();">
 									Cancelar
+								</button>
+								<button type="submit" class="btn btn-success pull-right" style="margin-right: 5px;" ng-click="saveServicio();">
+									{{botonText}}
 								</button>
 							</div>
 						</div>

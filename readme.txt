@@ -1,11 +1,22 @@
-1: Please put the files on a server or local host to preview. 
-eg: put the "/src" files under a localhost "src" folder
+1. Poner los archivos en el servidor local.
+Estructura:
 
-looks like:
-"src/css"
-"src/fonts"
-"src/img"
-"src/js"
-"src/tpl"
-"src/l10n"
-"src/index.html"
+"/api"
+"/css"
+"/fonts"
+"/img"
+"/js"
+"/l10n"
+"/tpl"
+"/vst"
+"index.html"
+"citasdb.sql"
+
+2. Ejecutar el sql del archivo citasdb.sql en el manejador de base de datos ej: (phpmyadmin).
+
+
+
+
+
+Desarrollado por:
+Juan David Benitez

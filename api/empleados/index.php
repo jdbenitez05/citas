@@ -6,7 +6,7 @@
     $app = \Slim\Slim::getInstance();
     
     define('ESPECIALCONSTANT', true);
-    require('../func/api_subopciones.php');
+    require('../func/api_empleados.php');
 
 
 ?>

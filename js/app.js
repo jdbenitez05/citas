@@ -44,118 +44,63 @@ var app = angular.module('app', [
 
 //************************************BASCULA*********************************
 
-            .state('app', {
-                abstract: true,
-                url: '/app',
-                templateUrl: 'tpl/app.html'
-            })
-            .state('app.dashboard-v1', {
-                url: '/dashboard-v1',
-                templateUrl: 'tpl/app_dashboard_v1.html'
-            })
+        .state('app', {
+            abstract: true,
+            url: '/app',
+            templateUrl: 'tpl/app.html',
+            // use resolve to load other dependences
+            resolve: {
+                deps: ['uiLoad',
+                  function( uiLoad ){
+                    return uiLoad.load([
+                        'js/jquery/fullcalendar/fullcalendar.css',
+                        'js/jquery/fullcalendar/theme.css',
+                        'js/jquery/jquery-ui-1.10.3.custom.min.js',
+                        'js/libs/moment.min.js',
+                        'js/jquery/fullcalendar/fullcalendar.min.js',
+                        'js/modules/ui-calendar.js'
+                        // 'js/app/calendar/calendar.js'
+                    ]);
+                }]
+            }
+        })
+        // .state('app.dashboard-v1', {
+        //     url: '/dashboard-v1',
+        //     templateUrl: 'tpl/app_dashboard_v1.html'
+        // })
 
-            .state('app.cbascula', {
-                url: '/cbascula',
-                template: '<div ui-view></div>'
-            })
+        .state('app.citas', {
+            url: '/citas',
+            template: '<div ui-view></div>'
+        })
 
-            .state('app.cbascula.listado', {
-                url: '/listado',
-                templateUrl: 'vst/cbasculas.html'
-            })
-
-             .state('app.cbascula.entregas', {
-                url: '/entregas',
-                templateUrl: 'vst/cbasculas_entregas.html'
-            })
-
-            .state('app.cbascula.bonificaciones', {
-                url: '/bonificaciones',
-                templateUrl: 'vst/bonificaciones.html'  
-            }) 
-
-//********************************GESTION RUTAS*************************************
-            .state('app.gt', {
-                url: '/gt',
-                template: '<div ui-view></div>'
-            })
-
-            .state('app.gt.rutas', {
-                url: '/rutas',
-                templateUrl: 'vst/rutas.html'  
-            })
+        .state('app.citas.listado', {
+            url: '/listado',
+            templateUrl: 'vst/citas.html'
+        })
 
 //**********************************MANTENIMIENTO***********************************            
-            .state('app.mantenimiento', {
-                url: '/mantenimiento',
-                template: '<div ui-view></div>'
-            })
+        .state('app.mantenimiento', {
+            url: '/mantenimiento',
+            template: '<div ui-view></div>'
+        })
 
-            .state('app.mantenimiento.empleados', {
-                url: '/empleados',
-                templateUrl: 'vst/empleados.html'
-            })
+        .state('app.mantenimiento.empleados', {
+            url: '/empleados',
+            templateUrl: 'vst/empleados.html'
+        })
 
-            .state('app.mantenimiento.servicios', {
-                url: '/servicios',
-                templateUrl: 'vst/servicios.html',
+        .state('app.mantenimiento.servicios', {
+            url: '/servicios',
+            templateUrl: 'vst/servicios.html',
 
-             })
+        })
 
-            .state('app.mantenimiento.sucursales', {
-                url: '/sucursales',
-                templateUrl: 'vst/sucursales.html',    
+        .state('app.mantenimiento.sucursales', {
+            url: '/sucursales',
+            templateUrl: 'vst/sucursales.html',    
 
-             })
-
-            .state('app.mantenimiento.vehiculos', {
-                url: '/vehiculos',
-                templateUrl: 'vst/vehiculos.html',
-
-            })
-
-            .state('app.mantenimiento.proveedores', {
-                url: '/proveedores',
-                templateUrl: 'vst/proveedores.html',           
-            })
-
-             .state('app.mantenimiento.pozos', {
-                url: '/pozos',
-                templateUrl: 'vst/pozos.html'  
-            })
-            
-            .state('app.mantenimiento.puertos', {
-                url: '/puertos',
-                templateUrl: 'vst/puertos.html'  
-            })
-
-            .state('app.mantenimiento.lugares', {
-                url: '/lugares',
-                templateUrl: 'vst/lugares.html'  
-            }) 
-
-            .state('app.mantenimiento.conductores', {
-                url: '/conductores',
-                templateUrl: 'vst/conductores.html'  
-            })
-
-//*********************************GESTION USUARIOS********************************
-            .state('app.administracion', {
-                url: '/administracion',
-                template: '<div ui-view></div>'
-            })
-
-            .state('app.administracion.usuarios', {
-                url: '/usuarios',
-                templateUrl: 'vst/usuarios.html'
-            })
-
-            .state('app.administracion.roles', {
-                url: '/roles',
-                templateUrl: 'vst/roles.html'
-            })
-
-                          
+        })                          
     }
   ]
 )
@@ -253,7 +198,4 @@ var app = angular.module('app', [
     });
 }])
 
-
-
 ;
-
